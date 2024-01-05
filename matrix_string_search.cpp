@@ -15,10 +15,16 @@
 // -> our new string = the word we want to find, if not move onto next row, if so, return found
 void find_in_matrix(std::vector<std::vector<char>> matrix, std::string word) {
     std::string m_word = "";
+    int word_length = word.size();
     //=- CHECKING FOR WORD IN ROWS / WITHIN VECTORS
     for (int i = 0; i < matrix.size(); i++) {
         for (int j = 0; j < matrix[i].size(); j++) {
-            m_word.append(&matrix[i][j]);
+            int remaining_chars = matrix[i].size() - j;
+            if ((remaining_chars < word_length) && !(word.find(matrix[i][j+1]))) { //
+                break;
+            } else {
+              m_word.push_back(matrix[i][j]);   // push_back() used in favor of append() since append() adds all chars in one iteration + memory inefficient
+            }
         }
         std::size_t found = m_word.find(word);
         if (found != std::string::npos) {
@@ -31,7 +37,12 @@ void find_in_matrix(std::vector<std::vector<char>> matrix, std::string word) {
     // we have to go [0][0]->[0][1]->[0][2]->[1][0]->[1][1]
     for (int i = 0; i < matrix[0].size(); i++) {    // handles the horizontal size of the matrix == handles movement across columns
         for (int j = 0; j < matrix.size(); j++) {   // handles the vertical size of the matrix == handles movement across rows
-            m_word.append(1, matrix[j][i]);   // appends one character from each column
+            int remaining_chars = matrix.size() - j; // matrix.size() represents the num of rows, and j iterates over those rows; basically: total_num_rows - current_row_index
+            if ((remaining_chars < word_length) && !(word.find(matrix[j][i]))) { // j+1 gives segmentation fault at the end by going out of bounds -> changed to just [j]
+                break;
+            } else {
+                m_word.push_back(matrix[j][i]);
+            }
         }
 
         std::size_t found = m_word.find(word);
@@ -54,7 +65,7 @@ int main() {
     std::vector<std::vector<char>> matrix;
 
     // ADDING VECTORS IN THE MATRIX
-    matrix.push_back(std::vector<char>{'q', 'a', 'w', 'w'});
+    matrix.push_back(std::vector<char>{'w', 'o', 'r', 'd'});
     matrix.push_back(std::vector<char>{'w', 'b', 'o', 'w'});
     matrix.push_back(std::vector<char>{'o', 'a', 'r', 'w'});
     matrix.push_back(std::vector<char>{'r', 'w', 'd', 'r'});
